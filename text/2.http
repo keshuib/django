@@ -1,16 +1,16 @@
 ###测试获取课程接口功能
-GET http://localhost:8000/courses/
+GET http://localhost:8000/api/courses/
 
 
 
 ###测试分页功能
-GET http://localhost:8000/courses/page=2&size=2
+GET http://localhost:8000/api/courses/?page=2&size=2
 
 
 ###测试获取课程阶段数据接口
-GET http://localhost:8000/stages/
+GET http://localhost:8000/api/stages/
 
 ###测试过滤功能
-GET http://localhost:8000/stages/course=1
+GET http://localhost:8000/api/stages/course=1
 
 
