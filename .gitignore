@@ -1,0 +1,12 @@
+__pycache__/  
+*.py[cod]  
+venv/  
+env/  
+jiaoyu_env/ 
+.venv/
+.env  
+.env.* 
+!.env.example 
+media/ 
+staticfiles/  
+*.log 

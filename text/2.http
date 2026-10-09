@@ -1,0 +1,16 @@
+###测试获取课程接口功能
+GET http://localhost:8000/courses/
+
+
+
+###测试分页功能
+GET http://localhost:8000/courses/page=2&size=2
+
+
+###测试获取课程阶段数据接口
+GET http://localhost:8000/stages/
+
+###测试过滤功能
+GET http://localhost:8000/stages/course=1
+
+

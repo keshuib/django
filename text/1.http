@@ -1,0 +1,39 @@
+###测试注册功能
+POST http://localhost:8000/api/regiser/
+Content-Type: application/json
+
+{
+
+"name":"lxy",
+"pwd":"123",
+"phone":"17531027986"
+
+}
+
+
+###登录功能
+POST  http://localhost:8000/api/login/
+# 现在验证不了 因为没有前端页面 没有token存储
+
+{
+    "pwd":"123",
+    "phone":"17531027986",
+ 
+}
+
+###测试获取单个用户功能
+GET http://localhost:8000/api/user/id=1/
+
+
+
+###测试删除用户接口功能
+DELETE http://localhost:8000/api/user/id=1/
+
+
+###测试测试更新用户的接口功能
+PUT  http://localhost:8000/api/user/id=1/
+# {
+
+#     ""更新的内容
+# }
+
