@@ -8,6 +8,9 @@ from rest_framework import generics
 
 # 获取学习计划全部数据
 class PlabView(generics.ListAPIView):
+    # 学习计划目录为公开查询接口。
+    authentication_classes = []
+
     queryset=Plan.objects.all()
     serializer_class=PlanSerializer
     # 过滤关联外键 获取学习计划所对应的课程
@@ -21,6 +24,9 @@ from .models import ClassType
 
 # 根据课程分类ID获取班级类型
 class ClassTypeListView(generics.ListAPIView):
+  # 班型目录为公开查询接口。
+  authentication_classes = []
+
   queryset = ClassType.objects.all()
   serializer_class = ClassTypeSerializer
     #过滤关联外键 获取班级所对应的课程

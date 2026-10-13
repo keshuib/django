@@ -6,6 +6,9 @@ from .models import FreeCourse
 
 # 获取所有限免课程内容
 class FreeCourseView(generics.ListAPIView):
+    # 限免课程用于首页展示，允许未登录用户浏览。
+    authentication_classes = []
+
     queryset=FreeCourse.objects.all()
     serializer_class=FreeCourseSerializer
     # 过滤关联的外键 只获取对应的内容 (限免课程所对应的阶段和讲师)

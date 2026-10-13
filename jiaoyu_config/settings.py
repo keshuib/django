@@ -30,7 +30,7 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-# 配置是否允许外网访问
+# 配置是否允许外网访问 
 ALLOWED_HOSTS = ['*']
 
 
@@ -180,26 +180,23 @@ REST_FRAMEWORK = {
 # PAGE_SIZE=10
 
 # 配置redis缓存
+# 旧配置保留：Redis 未启动或 redis Python 包缺失时，首页缓存接口会返回 500。
 CACHES = {
-  # default 是缓存名，可以配置多个缓存
-  "default": {
-    #  RedisCache 缓存类,将缓存数据存放到哪里 redis缓存类
-    "BACKEND": "django.core.cache.backends.redis.RedisCache",
-    # 配置正确的 ip和port
-    "LOCATION": "redis://127.0.0.1:6379",
-    #缓存间隔时间
-    "TIMEOUT":300,
-    # 额外参数
-    "OPTIONS": {
-        # 用redis中那个数据库
-      'db': '9',
-    #   链接池 提升性能
-      'parser_class': 'redis.connection.PythonParser',
-      'pool_class': 'redis.BlockingConnectionPool',
-      # 如果 redis 设置了密码，那么这里需要设置对应的密码，如果redis没有设置密码，那么这里也不设置
-      # "PASSWORD": "123456",
-     }
-   }
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379",
+        "TIMEOUT": 300,
+    }
 }
 
+# # 开发环境使用进程内缓存，先保证课程和首页接口可用；生产环境可切回 Redis。
+# CACHES = {
+#     "default": {
+#         "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+#         "LOCATION": "jiaoyu-local-cache",
+#         "TIMEOUT": 300,
+#     }
+# }
 
+
+# 此项目在开启时  python manage.py runserver 0.0.0.0:8000  应写端口号  同时前端项目使用  npm run dev -- --host 127.0.0.1 开启

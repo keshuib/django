@@ -8,6 +8,9 @@ from .serializers import TeacherSerializer
 
 # 获取讲师所有列表
 class TeacherView(generics.ListAPIView):
+    # 讲师列表为公开内容。
+    authentication_classes = []
+
     queryset=Teacher.objects.all()
     serializer_class=TeacherSerializer
     

@@ -24,18 +24,60 @@ class Userviewp(APIView):
         # 获取前端传来的数据 
         phone=reuqest.data.get('phone')
         pwd=reuqest.data.get("pwd")
+        # 旧实现没有在参数为空时提前返回，导致无效请求也会继续查询数据库。
+        # 新实现先校验登录参数，避免前端收到没有 token 的模糊响应。
+        if not phone or not pwd:
+            return Response(
+                {
+                    "status": status.HTTP_400_BAD_REQUEST,
+                    "msg": "手机号和密码不能为空",
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         try:
             user=User.objects.get(phone=phone)
             # 验证密码
-            if user.chek_password(pwd):
+            # 旧实现保留：原代码使用了不存在的 chek_password，登录会直接触发 AttributeError。
+            # if user.chek_password(pwd):
+            if user.check_password(pwd):
                 # 给id签发token 
                 token=get_token({'user_id':user.id})
-                # 将token以字典的形式返回前端
-                return Response({"status":status.HTTP_200_OK,"msg":"验证成功","data":{"token":token}})
+                # 旧实现只把 token 放在 data.token 中，部分前端封装会再次解包响应，
+                # 因而可能读不到 token。保留 data.token 的兼容格式，同时提供顶层 token。
+                # return Response({"status":status.HTTP_200_OK,"msg":"验证成功","data":{"token":token}})
+                token = str(token)
+                return Response(
+                    {
+                        "status": status.HTTP_200_OK,
+                        "msg": "验证成功",
+                        "token": token,
+                        "data": {
+                            "token": token,
+                            "user_id": user.id,
+                        },
+                    },
+                    status=status.HTTP_200_OK,
+                )
             else:
-                return Response({"status":status.HTTP_400_BAD_REQUEST,"msg":"验证失败"})
+                # 旧实现返回 HTTP 200，只在 JSON 中写 status=400，前端会误判为登录成功。
+                # return Response({"status":status.HTTP_400_BAD_REQUEST,"msg":"验证失败"})
+                return Response(
+                    {
+                        "status": status.HTTP_400_BAD_REQUEST,
+                        "msg": "验证失败",
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
         except User.DoesNotExist:
-            return Response({"status":status.HTTP_404_NOT_FOUND,"msg":"找不到对应用户"})
+            # 旧实现同样返回 HTTP 200，无法触发 axios 的错误分支。
+            # return Response({"status":status.HTTP_404_NOT_FOUND,"msg":"找不到对应用户"})
+            return Response(
+                {
+                    "status": status.HTTP_404_NOT_FOUND,
+                    "msg": "找不到对应用户",
+                },
+                status=status.HTTP_404_NOT_FOUND,
+            )
 
 
 from .serializers import Userserializer

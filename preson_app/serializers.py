@@ -4,7 +4,9 @@ from order_app.models import Order_app
 
 class PresonSerializer(serializers.ModelSerializer):
     id=serializers.IntegerField(source="course.id")
-    course_name=serializers.CharField(source="course.name")
+    # 旧写法保留：Order_app 模型字段实际名为 coursr。
+    # course_name=serializers.CharField(source="course.name")
+    course_name=serializers.CharField(source="coursr.name")
     class Meta:
         model=preson_app
         fields="__all__"
@@ -26,7 +28,9 @@ class UserSectionSerializer(serializers.ModelSerializer):
 # 获取订单列表
 class OrderSerializers(serializers.ModelSerializer):
     # 额外获取课程名称 和班级名称
-    course_name=serializers.CharField(source="course.name")
+    # 旧写法保留：Order_app 模型字段实际名为 coursr。
+    # course_name=serializers.CharField(source="course.name")
+    course_name=serializers.CharField(source="coursr.name")
     classtype_name=serializers.CharField(source="classtype.name")
     class Meta:
         model=Order_app

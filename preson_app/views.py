@@ -75,7 +75,9 @@ class UserSectionViews(APIView):
 class Orderviews(APIView):
        def get(self,request):
             #   获取订单列表 
-            order_app=Order_app.objects.filter(user=request.user).select_related('courser','classtype')
+            # 旧写法保留：订单模型字段是 coursr，不是 courser。
+            # order_app=Order_app.objects.filter(user=request.user).select_related('courser','classtype')
+            order_app=Order_app.objects.filter(user=request.user).select_related('coursr','classtype')
             # 序列化
             ser=OrderSerializers(order_app,many=True)
             # 返回数据

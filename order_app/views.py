@@ -3,17 +3,99 @@ from django.shortcuts import render
 # Create your views here.
 
 from rest_framework.response import Response
-from .seraliazers import OrderAppSeralizer
+# 旧订单实现依赖保留：SafeOrderView 不再需要这个会校验错误字段的序列化器。
+# from .seraliazers import OrderAppSeralizer
 from .models import Order_app
 # 订单的课程
-from course_app.models import Course
+# from course_app.models import Course
 # 订单后分配的班级
 from plan_app.models import ClassType
-from rest_framework import generics
+# from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework import status
-from .alipay_tool import get_alipay_client
-from json import loads
+# 支付宝配置为空时不在接口导入阶段加载 SDK，避免服务启动即失败。
+# from .alipay_tool import get_alipay_client
+# from json import loads
+import time
+from rest_framework import serializers
+
+
+class OrderCreateSerializer(serializers.Serializer):
+    """只接收班型 ID，避免把只读的用户和课程字段误当作请求参数。"""
+
+    classtype = serializers.PrimaryKeyRelatedField(
+        queryset=ClassType.objects.select_related("course").all()
+    )
+
+
+class SafeOrderView(APIView):
+    """修正版订单接口：GET 查询当前用户订单，POST 创建订单。"""
+
+    def get(self, request):
+        orders = (
+            Order_app.objects
+            .filter(user=request.user)
+            .select_related("coursr", "classtype")
+        )
+        data = [
+            {
+                "id": order.id,
+                "order_type": order.order_type,
+                "amount": order.amount,
+                "total_amount": order.total_amount,
+                "course_name": order.coursr.name if order.coursr else "",
+                "classtype_name": (
+                    order.classtype.name
+                    if order.classtype else ""
+                ),
+            }
+            for order in orders
+        ]
+        return Response(data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        serializer = OrderCreateSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        classtype = serializer.validated_data["classtype"]
+        if classtype.course is None:
+            return Response(
+                {"msg": "该班型没有关联课程"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        order_id = (
+            f"{request.user.id}-"
+            f"{classtype.id}-"
+            f"{int(time.time())}"
+        )
+        order, _ = Order_app.objects.get_or_create(
+            id=order_id,
+            defaults={
+                "user": request.user,
+                "coursr": classtype.course,
+                "classtype": classtype,
+                "amount": classtype.price,
+            },
+        )
+
+        # 旧支付宝调用暂时保留在下方原实现中；配置为空时不能调用 SDK，否则会 500。
+        return Response(
+            {
+                "msg": "订单创建成功",
+                "order_id": order.id,
+                "url": None,
+            },
+            status=status.HTTP_201_CREATED,
+        )
+
+"""
+旧订单实现保留：该版本存在 course 字段名、time 导入、支付宝参数和回调实例化错误。
+现已由上方 SafeOrderView 替代，并在 urls.py 中切换路由。
 
 # 创建添加订单接口
 class CreateOrderViews(APIView):
@@ -59,3 +141,4 @@ class PayCallBack(APIView):
         # 保存支付信息
         Order_app.save()
         return Response({"msg":"支付成功"},status=status.HTTP_200_OK)
+"""

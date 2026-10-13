@@ -35,6 +35,9 @@ class RestfulPage(PageNumberPagination):
     name="dispatch",
 )
 class CourseView(generics.ListAPIView):
+    # 课程目录是首页公开数据，不需要登录 token。
+    authentication_classes = []
+
     # 指定查询及
     # queryset=Course.objects.all()
     # 统计分类中有多少个阶段 多少个章节 多少个小节 需要注意 使用annotate时在去使用Count统计完成之后 需要使用values去进行查询（相当于原先的
@@ -67,6 +70,9 @@ class CourseView(generics.ListAPIView):
 
 # 获取课程阶段所有对应数据
 class StageView(generics.ListAPIView):
+    # 阶段目录是公开查询接口。
+    authentication_classes = []
+
     # 指定查询及
     queryset=Stage.objects.all()
     # 指定序列器
@@ -75,29 +81,44 @@ class StageView(generics.ListAPIView):
     '''
     设置过滤 给前端添加筛选功能
     '''
-    filterset_fields=('course')
+    # 旧写法保留：('course') 实际是字符串，django-filter 会按字符解析。
+    # filterset_fields=('course')
+    filterset_fields=('course',)
 
 
 
 # 获取课程章节所有数据 以及添加内容 以及过滤
 class ChapterView(generics.ListAPIView):
+    # 章节目录是公开查询接口。
+    authentication_classes = []
+
     queryset=Chapter.objects.all()
     serializer_class=ChapterSerializers
-    filterset_fields=('stage')
+    # 旧写法保留：('stage') 实际是字符串。
+    # filterset_fields=('stage')
+    filterset_fields=('stage',)
 
 
 
 
 # 获取所有小节列表
 class SectionView(generics.ListAPIView):
+    # 小节目录是公开查询接口。
+    authentication_classes = []
+
     queryset=Section.objects.all()
     serializer_class=SectionSerializers
-    filterset_fields=('chapter')
+    # 旧写法保留：('chapter') 实际是字符串。
+    # filterset_fields=('chapter')
+    filterset_fields=('chapter',)
 
 
 
 # 获取某个阶段以及其中对应的章节以及对应的小节
 class StageAllView(generics.RetrieveAPIView):
+     # 阶段详情是公开查询接口。
+     authentication_classes = []
+
      queryset=Stage.objects.all()
      serializer_class=StageDateSerializers
 

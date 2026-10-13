@@ -11,7 +11,9 @@ class CourseSerializers(serializers.ModelSerializer):
     class Meta:
         # 加上统计的字段的序列化 额外添加字段时 read_only=True不允许用户修改
         stage_count=serializers.IntegerField(read_only=True)
-        chapter_coun=serializers.IntegerField(read_only=True)
+        # 旧字段名保留：chapter_coun 少了 t，无法接收 chapter_count 注解。
+        # chapter_coun=serializers.IntegerField(read_only=True)
+        chapter_count=serializers.IntegerField(read_only=True)
         section_count=serializers.IntegerField(read_only=True)
         # 指定要序列的类
         model=Course

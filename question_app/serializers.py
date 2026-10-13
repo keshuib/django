@@ -4,8 +4,12 @@ from course_app.models import Section
 
 # 提交问题序列化
 class QuestionSeralizer(serializers.ModelSerializer):
-        model=Question_app
-        fields="__all__"
+        # 旧写法保留：model / fields 写在序列化器类中，缺少 Meta，调用 is_valid() 会触发断言错误。
+        # model=Question_app
+        # fields="__all__"
+        class Meta:
+            model=Question_app
+            fields="__all__"
         # 关联外籍只序列化id 那么在去写接口获取时 也只有id 如果要具体内容 需要额外添加序列化
 
 

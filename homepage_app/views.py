@@ -18,6 +18,9 @@ from rest_framework import generics
 )
 # 获取所有轮播数据 按从小到大排序
 class RoutationCharView(generics.ListAPIView):
+    # 首页轮播数据为公开内容。
+    authentication_classes = []
+
     queryset=RotationChart.objects.all().order_by("-id")
     serializer_class=RoutationSerializers
 
@@ -28,5 +31,8 @@ class RoutationCharView(generics.ListAPIView):
     cache_page(60*60,cache="default",key_prefix="fearure_chart"),
     name="dispatch")
 class FeatureView(generics.ListAPIView):
+    # 首页特色服务数据为公开内容。
+    authentication_classes = []
+
     queryset=FeatureService.objects.all().order_by("-id")
     serializer_class=FeatureSerializer
