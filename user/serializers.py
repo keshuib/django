@@ -37,6 +37,7 @@ class Userserializer(serializers.ModelSerializer):
     # django加密重写create()
     def create(self,vaildate_data):
         raw_password=vaildate_data.pop("pwd")
+        # 创建user
         user=User(**vaildate_data)
         user.set_password(raw_password)
         # 旧实现保留：user.asave() 不是 Django Model 的同步保存方法，会触发 AttributeError。

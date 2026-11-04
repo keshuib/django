@@ -11,6 +11,16 @@ from rest_framework.response import Response
 from rest_framework import status
 # Create your views here.
 
+'''
+
+
+返回的数据数据 时 状态码应写在json外面 不然前端可能判断不了
+
+'''
+
+
+
+
 # 问题模块 提交问题
 class QuestionAppViews(APIView):
     def post(self,request,format=None):
@@ -26,7 +36,7 @@ class QuestionAppViews(APIView):
                     # 添加数据
                 Question_app.objects.create(user=request.user,section=section, title=ser.validated_data['title'],
         content=ser.validated_data['content'],)
-                return Response({"msg":"提交成功","status":status.HTTP_200_OK})
+                return Response({"msg":"提交成功"},status=status.HTTP_200_OK)
         return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
            
 
