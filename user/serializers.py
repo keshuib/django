@@ -17,8 +17,8 @@ class Userserializer(serializers.ModelSerializer):
         model=User
         # 指定要序列化的字段
         # fields='__all__'
-        # 不序列
-        exclude =('create_at','update_at')
+        # pwd一定不能序列化  需要排除  对于 exclude 除了里面的其他的全部都序列化
+        exclude =['create_at','update_at','pwd']
 
 
     # DRF序列器会默认存储的是明文密码 需要重写create()方法
